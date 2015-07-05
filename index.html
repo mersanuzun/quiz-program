@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <style media="screen">
+      #content table tr td {
+        border : solid 1px;
+        width : 300px;
+        height : 10px;
+        padding: 20px;
+      }
+      #content table{
+        margin : auto;
+      }
+      #content table tr td div{
+        float : left;
+      }
+      .selections {
+        text-align: center;
+        padding-right : 10px;
+      }
+      #question-number {
+        padding-right : 10px;
+      }
+      .selections-td:hover {
+        background-color: #BBB8BB;
+      }
+      .none-click{
+        pointer-events: none;
+      }
+      #start{
+        width : 100px;
+        height : 100px;
+        text-align: center;
+      }
+      #start-div {
+        text-align: center;
+        margin-top:225px;
+      }
+      #result table {
+        margin : auto;
+        border : solid 1px;
+      }
+      #result table tr td{
+        text-align: center;
+        border : solid 1px;
+        padding : 5px;
+      }
+    </style>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        var socket = io();
+        $("#start").bind("click", function(){
+          $("#content").show();
+          $("#start").hide();
+          requestNewQuestion();
+        });
+        $(".selections-td").on("click", function(){
+          $that = $(this);
+          var $selection = $that.children().children().text();
+          socket.emit("user-selection", $selection.slice(1,$selection.length), function(callback){
+            $(".selections-td").addClass("none-click");
+            if (callback.result){
+              $that.css("background-color", "#5FD294");
+            }else{
+              $that.css("background-color", "red");
+              switch(callback.correctAnswer){
+                case 0 : $("#box-A").css("background-color", "#5FD294"); break;
+                case 1 : $("#box-B").css("background-color", "#5FD294"); break;
+                case 2 : $("#box-C").css("background-color", "#5FD294"); break;
+                case 3 : $("#box-D").css("background-color", "#5FD294"); break;
+              }
+            }
+          });
+          $("#next-question").attr("disabled", false);
+        })
+        $("#next-question").on("click", function(){
+          $that = $(this);
+          requestNewQuestion();
+          $that.attr("disabled", true);
+          $(".selections-td").css("background-color", "#FFFFFF");
+          $(".selections-td").removeClass("none-click");
+        })
+        socket.on("new-question", function(question){
+          newQuestionShow(question);
+        });
+        socket.on("test-result", function(testResult){
+          console.log(testResult.correct);
+          console.log(testResult.wrong);
+          console.log(testResult.success);
+          $("#content").hide();
+          $("#correct").text(testResult.correct);
+          $("#wrong").text(testResult.wrong);
+          $("#success").text(testResult.success.toFixed(2));
+          $("#result").show();
+        })
+        function requestNewQuestion(){
+          socket.emit("request-new-question");
+        }
+        function newQuestionShow(question){
+          $("#question-number span").html("<b>" + question.questionNumber + " -)</b>");
+          $("#question span").text(question.question);
+          $("#selection-a span").text(question.selections[0]);
+          $("#selection-b span").text(question.selections[1]);
+          $("#selection-c span").text(question.selections[2]);
+          $("#selection-d span").text(question.selections[3]);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="start-div">
+      <button type="button" id="start"> START </button>
+    </div>
+    <div id="content" style="display : none">
+      <table>
+        <tr>
+          <td colspan="2">
+            <div id="question-number">
+              <span></span>
+            </div>
+            <div id="question">
+              <span></span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="selections-td" id="box-A">
+            <div class="selections">
+              <span><b>A</b></span>
+            </div>
+            <div id="selection-a">
+              <span></span>
+            </div>
+          </td>
+          <td class="selections-td" id="box-B">
+            <div class="selections">
+              <span><b>B</b></span>
+            </div>
+            <div id="selection-b">
+              <span></span>
+            </div>
+          </td >
+        </tr>
+        <tr>
+          <td class="selections-td" id="box-C">
+            <div class="selections">
+              <span><b>C</b></span>
+            </div>
+            <div id="selection-c">
+              <span></span>
+            </div>
+          </td>
+          <td class="selections-td" id="box-D">
+            <div class="selections">
+              <span><b>D</b></span>
+            </div>
+
+            <div id="selection-d">
+              <span></span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="border : none; text-align : center;">
+            <button type="button" id="next-question" style="width : 250px; height : 35px;" disabled="true">NEXT</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="result" style="display : none">
+      <table>
+        <tr>
+          <th colspan="3">
+            Your Result
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Correct
+          </th>
+          <th>
+            Wrong
+          </th>
+          <th>
+            Success
+          </th>
+        </tr>
+        <tr>
+          <td id="correct"></td>
+          <td id="wrong"></td>
+          <td id="success"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
