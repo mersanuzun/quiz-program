@@ -1,0 +1,4 @@
+{ "__v" : 0, "_id" : { "$oid" : "55983dfdc86ebcce17c38498" }, "correctAnswer" : 0, "question" : "2 + 2 = ?", "questionNumber" : 2, "selections" : [ "4", "2", "6", "5" ] }
+{ "__v" : 0, "_id" : { "$oid" : "55983eaff8db65e81742d2ed" }, "correctAnswer" : 2, "question" : "2 + 2 * (6 / 2 * 1) = ?", "questionNumber" : 3, "selections" : [ "42", "9", "8", "2" ] }
+{ "_id" : { "$oid" : "55995946e8510ada4c4cddf5" }, "question" : "What is the capital city of Turkey?", "questionNumber" : 4, "correctAnswer" : 1, "selections" : [ "Izmir", "Ankara", "Istanbul", "Konya" ] }
+{ "_id" : { "$oid" : "55995a5ee8510ada4c4cddf6" }, "question" : "When did Ataturk Born?", "questionNumber" : 1, "selections" : [ 1980, 1880, 1881, 1818 ], "correctAnswer" : 2 }
